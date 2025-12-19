@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Configurateur Solaire - Solaris Store</title>
+    <style>
+        :root {
+            --primary: #f39c12; /* Orange Solaris */
+            --secondary: #2c3e50; /* Bleu Nuit */
+            --accent: #27ae60; /* Vert validation */
+            --light: #ecf0f1;
+        }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f7f6; margin: 0; padding: 0; color: #333; }
+        
+        /* Header */
+        header { background-color: white; padding: 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); display: flex; align-items: center; justify-content: center; }
+        header img { max-height: 50px; margin-right: 15px; } /* Placeholder pour logo */
+        header h1 { color: var(--secondary); margin: 0; font-size: 1.5rem; }
+
+        /* Container */
+        .container { max-width: 1000px; margin: 30px auto; padding: 20px; display: grid; grid-template-columns: 2fr 1fr; gap: 20px; }
+        
+        @media (max-width: 768px) { .container { grid-template-columns: 1fr; } }
+
+        /* Cards */
+        .card { background: white; border-radius: 10px; padding: 25px; margin-bottom: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+        h2 { color: var(--primary); border-bottom: 2px solid var(--light); padding-bottom: 10px; font-size: 1.2rem; }
+
+        /* Form Elements */
+        label { display: block; margin-top: 15px; font-weight: bold; color: var(--secondary); }
+        input, select { width: 100%; padding: 10px; margin-top: 5px; border: 1px solid #ddd; border-radius: 5px; box-sizing: border-box; }
+        button { background-color: var(--secondary); color: white; border: none; padding: 12px 20px; border-radius: 5px; cursor: pointer; transition: 0.3s; margin-top: 15px; }
+        button:hover { background-color: var(--primary); }
+        .btn-remove { background-color: #e74c3c; padding: 5px 10px; font-size: 0.8rem; margin-top: 0; width: auto; }
+
+        /* Table */
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        th, td { text-align: left; padding: 10px; border-bottom: 1px solid #eee; }
+        
+        /* Results Section */
+        .result-item { background: var(--light); padding: 15px; margin-bottom: 10px; border-left: 5px solid var(--primary); border-radius: 4px; }
+        .result-item h3 { margin: 0 0 5px 0; color: var(--secondary); font-size: 1rem; }
+        .tech-spec { font-size: 0.9rem; color: #666; }
+
+        /* AI Chatbot Widget */
+        #chatbot { position: fixed; bottom: 20px; right: 20px; width: 320px; background: white; border-radius: 15px; box-shadow: 0 5px 25px rgba(0,0,0,0.2); overflow: hidden; display: flex; flex-direction: column; height: 400px; border: 1px solid #ddd; z-index: 1000;}
+        #chat-header { background: var(--secondary); color: white; padding: 15px; font-weight: bold; cursor: pointer; display: flex; justify-content: space-between; }
+        #chat-messages { flex: 1; padding: 15px; overflow-y: auto; background: #f9f9f9; font-size: 0.9rem; }
+        #chat-input-area { padding: 10px; border-top: 1px solid #eee; display: flex; }
+        #chat-input { flex: 1; border: 1px solid #ddd; padding: 8px; border-radius: 20px; outline: none; }
+        .msg { margin-bottom: 10px; padding: 8px 12px; border-radius: 15px; max-width: 80%; }
+        .msg.bot { background: var(--light); align-self: flex-start; border-bottom-left-radius: 2px; }
+        .msg.user { background: var(--primary); color: white; align-self: flex-end; margin-left: auto; border-bottom-right-radius: 2px; }
+        
+        /* Visibility toggle */
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+
+<header>
+    <img src="https://via.placeholder.com/150x50?text=SOLARIS" alt="Solaris Logo">
+    <h1>Configurateur Habitat Isolé</h1>
+</header>
+
+<div class="container">
+    <div class="main-content">
+        
+        <div class="card">
+            <h2>1. Localisation & Ensoleillement</h2>
+            <p>Le système adapte la puissance solaire selon votre zone géographique.</p>
+            <label>Zone Géographique</label>
+            <select id="zone">
+                <option value="0.8">Nord de la France / Belgique (Faible ensoleillement)</option>
+                <option value="1.0" selected>Centre / Ouest (Moyen)</option>
+                <option value="1.2">Sud de la France (Fort ensoleillement)</option>
+                <option value="1.1">Zone Montagneuse (Variable)</option>
+                <option value="1.4">DOM-TOM / Afrique (Très fort)</option>
+            </select>
+        </div>
+
+        <div class="card">
+            <h2>2. Vos besoins en énergie</h2>
+            <table id="appliance-table">
+                <thead>
+                    <tr>
+                        <th>Appareil</th>
+                        <th>Puissance (W)</th>
+                        <th>Heures/jour</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="appliance-list">
+                    </tbody>
+            </table>
+            <button onclick="addApplianceRow()">+ Ajouter un appareil</button>
+            
+            <div style="margin-top: 20px; padding-top:10px; border-top: 1px solid #eee;">
+                <strong>Consommation Journalière estimée : <span id="total-consumption">0</span> Wh/jour</strong>
+                <br>
+                <strong>Puissance de Crête (tous allumés) : <span id="peak-power">0</span> W</strong>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>3. Préférences Système</h2>
+            <label>Type de Batterie</label>
+            <select id="battery-type">
+                <option value="lithium">Lithium (Pylontech US5000) - Recommandé</option>
+                <option value="lead">Plomb Gel/AGM (Moins cher, durée de vie + courte)</option>
+            </select>
+            
+            <label>Jours d'autonomie souhaités (sans soleil)</label>
+            <select id="autonomy">
+                <option value="1">1 jour (Usage weekend/été)</option>
+                <option value="2" selected>2 jours (Standard Isolé)</option>
+                <option value="3">3 jours (Sécurité maximale)</option>
+            </select>
+            
+            <button onclick="calculateSolarKit()" style="width: 100%; font-size: 1.1rem; margin-top: 20px;">CALCULER MON KIT</button>
+        </div>
+    </div>
+
+    <div class="sidebar">
+        <div class="card" id="results-card" style="position: sticky; top: 20px;">
+            <h2>Votre Kit Solaris</h2>
+            <div id="results-content">
+                <p style="color: #777; font-style: italic;">Remplissez le formulaire et cliquez sur Calculer.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="chatbot">
+    <div id="chat-header" onclick="toggleChat()">
+        <span>Assistant Solaris IA</span>
+        <span>▼</span>
+    </div>
+    <div id="chat-messages">
+        <div class="msg bot">Bonjour ! Je suis l'assistant technique Solaris. Une question sur le dimensionnement ou le matériel ?</div>
+    </div>
+    <div id="chat-input-area">
+        <input type="text" id="chat-input" placeholder="Posez votre question..." onkeypress="handleEnter(event)">
+    </div>
+</div>
+
+<script>
+    // --- DATA & CONSTANTS ---
+    const PANEL_W = 460; // JA Solar 460W
+    const PANEL_V = 41.96; // Voc approx
+    const BAT_LITHIUM_KWH = 4.8; // US5000
+    const BAT_LITHIUM_DOD = 0.9; // 90% utilisable
+    const BAT_LEAD_DOD = 0.5; // 50% utilisable
+
+    // Initial Row
+    addApplianceRow();
+
+    // --- FUNCTIONS ---
+
+    function addApplianceRow() {
+        const tbody = document.getElementById('appliance-list');
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td><input type="text" placeholder="Ex: Frigo, TV..." class="name-input"></td>
+            <td><input type="number" placeholder="Watts" class="watts-input" onchange="updateTotals()"></td>
+            <td><input type="number" placeholder="Heures" class="hours-input" onchange="updateTotals()"></td>
+            <td><button class="btn-remove" onclick="this.closest('tr').remove(); updateTotals()">X</button></td>
+        `;
+        tbody.appendChild(row);
+    }
+
+    function updateTotals() {
+        let totalWh = 0;
+        let peakW = 0;
+        
+        document.querySelectorAll('#appliance-list tr').forEach(row => {
+            const w = parseFloat(row.querySelector('.watts-input').value) || 0;
+            const h = parseFloat(row.querySelector('.hours-input').value) || 0;
+            totalWh += w * h;
+            peakW += w; // Worst case: everything on
+        });
+
+        document.getElementById('total-consumption').innerText = Math.ceil(totalWh);
+        document.getElementById('peak-power').innerText = Math.ceil(peakW);
+        return { totalWh, peakW };
+    }
+
+    function calculateSolarKit() {
+        const { totalWh, peakW } = updateTotals();
+        const zoneFactor = parseFloat(document.getElementById('zone').value);
+        const batteryType = document.getElementById('battery-type').value;
+        const autonomyDays = parseInt(document.getElementById('autonomy').value);
+
+        if (totalWh === 0) {
+            alert("Veuillez entrer au moins un appareil avec sa consommation.");
+            return;
+        }
+
+        // 1. Calcul Panneaux (Production)
+        // Formule simplifiée : Besoin / (Ensoleillement * Rendement global 0.75)
+        // En hiver, on considère une moyenne basse d'heures d'ensoleillement (HSE) x Zone
+        const baseSunHours = 3; // Moyenne hivernale base
+        const productionFactor = baseSunHours * zoneFactor * 0.75; 
+        const neededWp = totalWh / productionFactor;
+        const panelCount = Math.ceil(neededWp / PANEL_W);
+        const arrayPower = panelCount * PANEL_W;
+
+        // 2. Calcul Batterie (Stockage)
+        const neededStorageWh = totalWh * autonomyDays;
+        let batteryResult = "";
+        
+        if (batteryType === 'lithium') {
+            const usefulCapacity = BAT_LITHIUM_KWH * 1000 * BAT_LITHIUM_DOD;
+            const nbBat = Math.ceil(neededStorageWh / usefulCapacity);
+            batteryResult = `${nbBat}x Pylontech US5000 (Total ${(nbBat * 4.8).toFixed(1)} kWh)`;
+        } else {
+            // Simulation Parc Plomb 12V 200Ah (2400Wh brut)
+            const batUnitWh = 12 * 220; // 220Ah
+            const usefulUnitWh = batUnitWh * BAT_LEAD_DOD;
+            const nbBat = Math.ceil(neededStorageWh / usefulUnitWh);
+            // On force par paire pour du 24V ou 48V
+            const adjustedNb = nbBat % 2 !== 0 ? nbBat + 1 : nbBat; 
+            batteryResult = `${adjustedNb}x Batteries Gel 12V 220Ah (Montage série/parallèle)`;
+        }
+
+        // 3. Onduleur (Victron MultiPlus II)
+        // On prend la puissance crête + 20% de marge de démarrage
+        const requiredInverterW = peakW * 1.2;
+        let inverterModel = "MultiPlus-II 48/3000/35";
+        if (requiredInverterW > 2400) inverterModel = "MultiPlus-II 48/5000/70";
+        if (requiredInverterW > 4000) inverterModel = "MultiPlus-II 48/8000/110";
+        if (requiredInverterW > 6500) inverterModel = "MultiPlus-II 48/10000";
+
+        // 4. Régulateur MPPT (Victron SmartSolar)
+        // Dimensionnement approximatif V/I
+        let mpptModel = "SmartSolar MPPT 150/35";
+        if (panelCount > 3) mpptModel = "SmartSolar MPPT 250/60";
+        if (panelCount > 6) mpptModel = "SmartSolar MPPT 250/100";
+        if (panelCount > 10) mpptModel = "SmartSolar MPPT RS 450/100";
+
+        // Affichage
+        const html = `
+            <div class="result-item">
+                <h3>☀️ Champ Solaire</h3>
+                <div class="tech-spec">
+                    <strong>${panelCount} panneaux JA Solar ${PANEL_W}W</strong><br>
+                    Puissance totale : ${arrayPower} Wc<br>
+                    Surface approx : ${(panelCount * 2.1).toFixed(1)} m²
+                </div>
+            </div>
+
+            <div class="result-item">
+                <h3>⚡ Stockage (${batteryType === 'lithium' ? 'Lithium' : 'Plomb'})</h3>
+                <div class="tech-spec">
+                    <strong>${batteryResult}</strong><br>
+                    Autonomie estimée : ${autonomyDays} jours
+                </div>
+            </div>
+
+            <div class="result-item">
+                <h3>🔌 Électronique Victron</h3>
+                <div class="tech-spec">
+                    <strong>Onduleur :</strong> ${inverterModel}<br>
+                    <strong>Régulateur :</strong> ${mpptModel}<br>
+                    <strong>Supervision :</strong> Cerbo GX + Écran Touch
+                </div>
+            </div>
+            
+            <button style="background:#27ae60; margin-top:10px;">Demander un devis pour ce Kit</button>
+        `;
+        
+        document.getElementById('results-content').innerHTML = html;
+    }
+
+    // --- AI CHATBOT LOGIC (SIMULATED) ---
+    function toggleChat() {
+        const msgs = document.getElementById('chat-messages');
+        const input = document.getElementById('chat-input-area');
+        const chat = document.getElementById('chatbot');
+        
+        if (chat.style.height === '40px') {
+            chat.style.height = '400px';
+        } else {
+           // chat.style.height = '40px'; // Optionnel : réduire
+        }
+    }
+
+    function handleEnter(e) {
+        if (e.key === 'Enter') {
+            const input = document.getElementById('chat-input');
+            const userText = input.value;
+            if (!userText) return;
+
+            addMessage(userText, 'user');
+            input.value = '';
+            
+            // Simulation de réponse IA (Délai)
+            setTimeout(() => {
+                const response = getBotResponse(userText);
+                addMessage(response, 'bot');
+            }, 600);
+        }
+    }
+
+    function addMessage(text, sender) {
+        const div = document.createElement('div');
+        div.className = `msg ${sender}`;
+        div.innerText = text;
+        const container = document.getElementById('chat-messages');
+        container.appendChild(div);
+        container.scrollTop = container.scrollHeight;
+    }
+
+    // Base de connaissance locale simple
+    function getBotResponse(input) {
+        input = input.toLowerCase();
+        
+        if (input.includes('bonjour') || input.includes('salut')) return "Bonjour ! Comment puis-je vous aider pour votre projet solaire ?";
+        if (input.includes('us5000') || input.includes('lithium')) return "La batterie Pylontech US5000 est une batterie Lithium LiFePO4 de 4.8kWh. Elle offre 6000 cycles à 90% de décharge. C'est le top pour du site isolé.";
+        if (input.includes('onduleur') || input.includes('multiplus')) return "Le MultiPlus-II combine un onduleur (convertit le courant batterie en 230V) et un chargeur. Il gère intelligemment la source d'énergie.";
+        if (input.includes('panneau') || input.includes('ja solar')) return "Nous utilisons des panneaux JA Solar 460W Mono PERC. Ils offrent un excellent rendement même par faible luminosité.";
+        if (input.includes('frigo') || input.includes('réfrigérateur')) return "Un frigo standard consomme entre 300 et 800 Wh/jour selon sa classe énergétique. Pensez à vérifier l'étiquette arrière.";
+        if (input.includes('gx') || input.includes('cerbo')) return "Le système GX (Cerbo GX) est le cerveau de l'installation. Il permet de voir votre production et consommation en direct sur votre téléphone via le portail VRM.";
+        
+        return "Je note cette information. Pour une réponse technique précise sur ce point spécifique, validez votre panier, un technicien Solaris vérifiera votre configuration.";
+    }
+</script>
+
+</body>
+</html>
