@@ -3,402 +3,428 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Configurateur Solaris Store - Site Isolé</title>
+    <title>Configurateur Solaris Store - Comparateur</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root {
-            --primary: #f39c12; /* Orange Solaris */
-            --secondary: #2c3e50; /* Bleu Nuit */
-            --accent: #27ae60; /* Vert validation */
+            --primary: #f39c12; 
+            --secondary: #2c3e50; 
+            --accent: #27ae60;
             --light: #ecf0f1;
-            --danger: #c0392b;
+            --danger: #e74c3c;
+            --text: #34495e;
         }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f7f6; margin: 0; padding: 0; color: #333; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f2f5; margin: 0; padding: 0; color: var(--text); }
         
-        header { background-color: white; padding: 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); display: flex; align-items: center; justify-content: center; }
-        header img { max-height: 50px; margin-right: 15px; } 
-        header h1 { color: var(--secondary); margin: 0; font-size: 1.5rem; }
+        header { background-color: white; padding: 15px 0; box-shadow: 0 2px 10px rgba(0,0,0,0.05); text-align: center; }
+        header h1 { color: var(--secondary); margin: 10px 0 0 0; font-size: 1.8rem; }
+        header p { color: #7f8c8d; margin: 5px 0 0 0; }
 
-        .container { max-width: 1100px; margin: 30px auto; padding: 20px; display: grid; grid-template-columns: 2fr 1fr; gap: 20px; }
-        @media (max-width: 768px) { .container { grid-template-columns: 1fr; } }
-
-        .card { background: white; border-radius: 10px; padding: 25px; margin-bottom: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
-        h2 { color: var(--primary); border-bottom: 2px solid var(--light); padding-bottom: 10px; font-size: 1.2rem; }
-
-        label { display: block; margin-top: 15px; font-weight: bold; color: var(--secondary); font-size: 0.9rem; }
-        input, select { width: 100%; padding: 10px; margin-top: 5px; border: 1px solid #ddd; border-radius: 5px; box-sizing: border-box; }
+        .container { max-width: 1200px; margin: 30px auto; padding: 20px; }
         
-        button.action-btn { background-color: var(--secondary); color: white; border: none; padding: 12px 20px; border-radius: 5px; cursor: pointer; transition: 0.3s; width: 100%; font-weight: bold; font-size: 1rem; margin-top: 15px; }
-        button.action-btn:hover { background-color: var(--primary); }
+        /* Layout Grid */
+        .layout-grid { display: grid; grid-template-columns: 1fr; gap: 30px; }
         
-        .add-row-container { display: flex; gap: 10px; margin-top: 15px; align-items: flex-end; }
-        .add-row-container select { flex-grow: 1; margin-top: 0; }
-        .add-row-container button { width: auto; margin-top: 0; background-color: var(--accent); }
+        /* Section Styles */
+        .section-card { background: white; border-radius: 12px; padding: 30px; box-shadow: 0 5px 15px rgba(0,0,0,0.03); }
+        h2 { color: var(--secondary); border-left: 5px solid var(--primary); padding-left: 15px; margin-top: 0; }
 
-        .btn-remove { background-color: var(--danger); color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; }
+        /* Form Styling */
+        .input-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 8px; font-weight: 600; color: var(--secondary); }
+        select, input { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 1rem; transition: 0.3s; box-sizing: border-box;}
+        select:focus, input:focus { border-color: var(--primary); outline: none; }
 
-        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
-        th { background: #f8f9fa; color: var(--secondary); font-size: 0.85rem; }
-        th, td { text-align: left; padding: 12px 10px; border-bottom: 1px solid #eee; }
+        /* Table */
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th { background: #f8f9fa; text-align: left; padding: 15px; color: var(--secondary); font-weight: 600; }
+        td { padding: 15px; border-bottom: 1px solid #eee; }
+        .btn-remove { background: #ffebee; color: var(--danger); border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; }
+        .btn-remove:hover { background: var(--danger); color: white; }
+
+        /* Action Buttons */
+        .btn-add { background: var(--secondary); color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; }
+        .btn-calc { background: var(--primary); color: white; border: none; padding: 15px 30px; border-radius: 8px; font-size: 1.2rem; font-weight: bold; cursor: pointer; width: 100%; margin-top: 20px; transition: transform 0.2s; }
+        .btn-calc:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(243, 156, 18, 0.4); }
+
+        /* Comparison Results */
+        #results-area { display: none; margin-top: 40px; }
+        .kits-container { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 20px; }
+        @media (max-width: 800px) { .kits-container { grid-template-columns: 1fr; } }
+
+        .kit-card { background: white; border-radius: 12px; overflow: hidden; border: 1px solid #eee; transition: 0.3s; position: relative; display: flex; flex-direction: column; }
+        .kit-card:hover { transform: translateY(-5px); box-shadow: 0 10px 30px rgba(0,0,0,0.1); border-color: var(--primary); }
         
-        .result-item { background: var(--light); padding: 15px; margin-bottom: 10px; border-left: 5px solid var(--primary); border-radius: 4px; }
-        .result-item h3 { margin: 0 0 5px 0; color: var(--secondary); font-size: 1rem; }
-        .tech-spec { font-size: 0.9rem; color: #555; line-height: 1.5; }
+        .kit-header { padding: 20px; color: white; text-align: center; }
+        .kit-eco .kit-header { background: linear-gradient(135deg, #95a5a6, #7f8c8d); }
+        .kit-pro .kit-header { background: linear-gradient(135deg, #f39c12, #d35400); }
         
-        .warning-box { background-color: #fff3cd; color: #856404; padding: 10px; border-radius: 5px; font-size: 0.85rem; margin-top: 10px; border: 1px solid #ffeeba; display: none; }
+        .kit-body { padding: 25px; flex-grow: 1; }
+        .kit-price { font-size: 1.8rem; font-weight: bold; color: var(--secondary); text-align: center; margin: 15px 0; }
+        .kit-details ul { padding-left: 20px; color: #555; }
+        .kit-details li { margin-bottom: 8px; }
+        
+        .kit-footer { padding: 20px; text-align: center; background: #f9f9f9; border-top: 1px solid #eee; }
+        .btn-select { width: 100%; padding: 12px; border-radius: 8px; border: none; font-weight: bold; cursor: pointer; font-size: 1rem; }
+        .kit-eco .btn-select { background: #95a5a6; color: white; }
+        .kit-pro .btn-select { background: var(--primary); color: white; }
 
-        /* AI Chatbot */
-        #chatbot { position: fixed; bottom: 20px; right: 20px; width: 320px; background: white; border-radius: 15px; box-shadow: 0 5px 25px rgba(0,0,0,0.2); overflow: hidden; display: flex; flex-direction: column; height: 400px; border: 1px solid #ddd; z-index: 1000; font-family: sans-serif; }
-        #chat-header { background: var(--secondary); color: white; padding: 15px; font-weight: bold; cursor: pointer; display: flex; justify-content: space-between; }
-        #chat-messages { flex: 1; padding: 15px; overflow-y: auto; background: #f9f9f9; font-size: 0.9rem; }
-        #chat-input-area { padding: 10px; border-top: 1px solid #eee; display: flex; }
-        #chat-input { flex: 1; border: 1px solid #ddd; padding: 8px; border-radius: 20px; outline: none; }
-        .msg { margin-bottom: 10px; padding: 8px 12px; border-radius: 15px; max-width: 80%; }
-        .msg.bot { background: var(--light); align-self: flex-start; border-bottom-left-radius: 2px; }
-        .msg.user { background: var(--primary); color: white; align-self: flex-end; margin-left: auto; border-bottom-right-radius: 2px; }
+        /* AI Chatbot Advanced */
+        #chatbot { position: fixed; bottom: 30px; right: 30px; width: 350px; height: 50px; background: white; border-radius: 25px; box-shadow: 0 10px 40px rgba(0,0,0,0.2); transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); overflow: hidden; z-index: 1000; border: 1px solid #eee; display: flex; flex-direction: column; }
+        #chatbot.open { height: 500px; border-radius: 15px; }
+        
+        .chat-header { background: var(--secondary); color: white; padding: 15px 20px; cursor: pointer; display: flex; align-items: center; gap: 10px; font-weight: bold; }
+        .chat-status { width: 10px; height: 10px; background: #2ecc71; border-radius: 50%; display: inline-block; animation: pulse 2s infinite; }
+        
+        .chat-body { flex: 1; padding: 15px; overflow-y: auto; background: #f4f7f6; display: flex; flex-direction: column; gap: 10px; }
+        .chat-input { padding: 15px; background: white; border-top: 1px solid #eee; display: flex; gap: 10px; }
+        .chat-input input { border-radius: 20px; padding: 10px 15px; font-size: 0.9rem; }
+        
+        .msg { padding: 10px 15px; border-radius: 15px; max-width: 85%; font-size: 0.9rem; line-height: 1.4; animation: popIn 0.3s ease; }
+        .msg.bot { background: white; color: #333; border-bottom-left-radius: 2px; border: 1px solid #eee; }
+        .msg.user { background: var(--primary); color: white; align-self: flex-end; border-bottom-right-radius: 2px; }
+        .msg.system { background: #e8f6f3; color: #16a085; font-size: 0.8rem; text-align: center; align-self: center; border: 1px dashed #1abc9c; width: 90%; }
+
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
+        @keyframes popIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
 
 <header>
-    <img src="https://via.placeholder.com/150x50?text=SOLARIS" alt="Solaris Logo">
-    <h1>Configurateur Technique</h1>
+    <h1><i class="fas fa-solar-panel" style="color:var(--primary);"></i> Solaris Store</h1>
+    <p>Configurateur Site Isolé & Hybride</p>
 </header>
 
 <div class="container">
-    <div class="main-content">
-        
-        <div class="card">
-            <h2>1. Localisation</h2>
-            <label>Zone Géographique (Ensoleillement Hiver)</label>
+    
+    <div class="section-card">
+        <h2><i class="fas fa-map-marker-alt"></i> 1. Localisation</h2>
+        <div class="input-group">
+            <label>Sélectionnez votre zone :</label>
             <select id="zone">
-                <option value="0.8">Nord / Est (Faible - Coeff 0.8)</option>
-                <option value="1.0" selected>Centre / Ouest (Moyen - Coeff 1.0)</option>
-                <option value="1.2">Sud / Corse (Fort - Coeff 1.2)</option>
-                <option value="1.4">DOM-TOM / Afrique (Très Fort - Coeff 1.4)</option>
+                <option value="0.85">Nord / Belgique (Faible)</option>
+                <option value="1.0" selected>Centre / Ouest (Moyen)</option>
+                <option value="1.3">Sud de la France (Fort)</option>
+                <option value="1.5">Afrique / DOM-TOM (Très fort)</option>
             </select>
         </div>
-
-        <div class="card">
-            <h2>2. Appareils & Consommation</h2>
-            <div class="add-row-container">
-                <select id="preset-select">
-                    <option value="">-- Choisir un appareil pré-configuré --</option>
-                    <option value='{"name":"Réfrigérateur A++", "w":40, "h":24}'>Réfrigérateur A++ (24h/24)</option>
-                    <option value='{"name":"Éclairage LED (x5)", "w":50, "h":4}'>Éclairage LED 5 ampoules (4h)</option>
-                    <option value='{"name":"TV LED", "w":80, "h":3}'>TV LED (3h)</option>
-                    <option value='{"name":"Box Internet", "w":15, "h":24}'>Box Internet (24h/24)</option>
-                    <option value='{"name":"Chargeur Smartphone", "w":10, "h":2}'>Chargeur Téléphone (2h)</option>
-                    <option value='{"name":"PC Portable", "w":60, "h":4}'>Ordinateur Portable (4h)</option>
-                    <option value='{"name":"Pompe à eau", "w":800, "h":0.5}'>Pompe à eau (30 min)</option>
-                    <option value='{"name":"Micro-ondes", "w":1200, "h":0.2}'>Micro-ondes (12 min)</option>
-                    <option value='{"name":"Machine à café", "w":1500, "h":0.1}'>Machine à café (6 min)</option>
-                </select>
-                <button onclick="addPreset()" class="action-btn" style="margin-top:0;">Ajouter</button>
-            </div>
-            <p style="font-size: 0.8rem; color: #666; margin-top: 5px;">Ou ajoutez manuellement ci-dessous :</p>
-
-            <table id="appliance-table">
-                <thead>
-                    <tr>
-                        <th>Appareil</th>
-                        <th>Puissance (W)</th>
-                        <th>Heures/jour</th>
-                        <th></th>
-                    </tr>
-                </thead>
-                <tbody id="appliance-list"></tbody>
-            </table>
-            <button onclick="addEmptyRow()" style="background:none; color:var(--primary); border:1px dashed var(--primary); padding:5px; width:100%; margin-top:10px; cursor:pointer;">+ Ajouter une ligne vide</button>
-            
-            <div style="margin-top: 20px; padding-top:10px; border-top: 2px solid #eee;">
-                <strong>Consommation : <span id="total-consumption">0</span> Wh/jour</strong><br>
-                <small>Puissance max instantanée : <span id="peak-power">0</span> W</small>
-            </div>
-        </div>
-
-        <div class="card">
-            <h2>3. Dimensionnement Batterie</h2>
-            <label>Technologie Batterie</label>
-            <select id="battery-type" onchange="updateDisclaimer()">
-                <option value="lithium">Lithium (Pylontech US5000) - Décharge 80%</option>
-                <option value="lead">Plomb Gel (Ultracell 150Ah) - Décharge Journalière 30%</option>
-            </select>
-            <div id="lead-warning" class="warning-box">
-                ⚠ Le dimensionnement Plomb respecte une décharge journalière max de 30% pour préserver les cycles, et 70% max en cas de coupure prolongée.
-            </div>
-            
-            <label>Jours d'autonomie (Jours sans soleil)</label>
+        <div class="input-group">
+            <label>Autonomie souhaitée :</label>
             <select id="autonomy">
-                <option value="1">1 jour (Usage été/weekend)</option>
+                <option value="1">1 jour (Usage Weekend)</option>
                 <option value="2" selected>2 jours (Standard Habitat)</option>
-                <option value="3">3 jours (Sécurité / Hiver)</option>
+                <option value="3">3 jours (Sécurité Maximale)</option>
             </select>
-            
-            <button onclick="calculateSolarKit()" class="action-btn">CALCULER MON KIT</button>
         </div>
     </div>
 
-    <div class="sidebar">
-        <div class="card" id="results-card" style="position: sticky; top: 20px;">
-            <h2>Votre Kit Solaris</h2>
-            <div id="results-content">
-                <p style="color: #777; font-style: italic; text-align:center;">
-                    Configurez vos appareils à gauche pour voir le matériel recommandé.
-                </p>
+    <div class="section-card" style="margin-top: 20px;">
+        <h2><i class="fas fa-plug"></i> 2. Vos Appareils</h2>
+        
+        <div style="background: #fdf2e9; padding: 15px; border-radius: 8px; border-left: 4px solid var(--primary); margin-bottom: 20px;">
+            <i class="fas fa-info-circle"></i> <strong>Astuce :</strong> Ajoutez vos appareils un par un. L'assistant IA analyse votre liste en temps réel.
+        </div>
+
+        <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+            <select id="preset-select">
+                <option value="">-- Appareils Rapides --</option>
+                <option value='{"name":"Frigo A++", "w":40, "h":24, "cat":"motor"}'>Réfrigérateur (24h)</option>
+                <option value='{"name":"Éclairage LED", "w":50, "h":5, "cat":"resistive"}'>Lumières (5h)</option>
+                <option value='{"name":"TV LED", "w":80, "h":4, "cat":"electronic"}'>Télévision (4h)</option>
+                <option value='{"name":"Pompe à eau", "w":1000, "h":0.5, "cat":"motor"}'>Pompe à eau (30 min)</option>
+                <option value='{"name":"Machine Café", "w":1400, "h":0.1, "cat":"heating"}'>Cafetière (Express)</option>
+                <option value='{"name":"Lave Linge", "w":2000, "h":0.5, "cat":"motor"}'>Lave-linge (Cycle Eco)</option>
+                <option value='{"name":"Ordinateur", "w":60, "h":6, "cat":"electronic"}'>PC Portable (6h)</option>
+            </select>
+            <button onclick="addPreset()" class="btn-add">Ajouter</button>
+        </div>
+
+        <table id="appliance-table">
+            <thead>
+                <tr>
+                    <th>Appareil</th>
+                    <th width="120">Puissance (W)</th>
+                    <th width="120">Heures/jour</th>
+                    <th width="50"></th>
+                </tr>
+            </thead>
+            <tbody id="appliance-list"></tbody>
+        </table>
+
+        <div style="text-align: right; margin-top: 15px; font-size: 1.1rem;">
+            Total: <strong><span id="total-wh">0</span> Wh/jour</strong> | Crête: <strong><span id="peak-w">0</span> W</strong>
+        </div>
+
+        <button onclick="calculateKits()" class="btn-calc">COMPARER LES KITS SOLAIRES</button>
+    </div>
+
+    <div id="results-area">
+        <h2 style="text-align: center; border: none;">💡 Nos Recommandations</h2>
+        
+        <div class="kits-container">
+            
+            <div class="kit-card kit-eco">
+                <div class="kit-header">
+                    <h3>OPTION BUDGET</h3>
+                    <span>Technologie Plomb Gel</span>
+                </div>
+                <div class="kit-body">
+                    <p>Idéal pour résidence secondaire ou budget maîtrisé.</p>
+                    <div class="kit-price" id="price-lead">-- €</div>
+                    <div class="kit-details" id="details-lead"></div>
+                </div>
+                <div class="kit-footer">
+                    <button class="btn-select" onclick="openDetails('lead')">Voir ce kit</button>
+                </div>
             </div>
+
+            <div class="kit-card kit-pro">
+                <div style="position: absolute; top: 15px; right: -30px; background: #c0392b; color: white; padding: 5px 40px; transform: rotate(45deg); font-weight: bold; font-size: 0.8rem;">BEST SELLER</div>
+                <div class="kit-header">
+                    <h3>OPTION PERFORMANCE</h3>
+                    <span>Technologie Lithium LiFePO4</span>
+                </div>
+                <div class="kit-body">
+                    <p>Durée de vie x5, charge rapide, extension facile.</p>
+                    <div class="kit-price" id="price-lithium">-- €</div>
+                    <div class="kit-details" id="details-lithium"></div>
+                </div>
+                <div class="kit-footer">
+                    <button class="btn-select" onclick="openDetails('lithium')">Voir ce kit</button>
+                </div>
+            </div>
+
         </div>
     </div>
+
 </div>
 
-<div id="chatbot">
-    <div id="chat-header" onclick="toggleChat()">
+<div id="chatbot" class="closed">
+    <div class="chat-header" onclick="toggleChat()">
+        <span class="chat-status"></span>
         <span>Assistant Solaris IA</span>
-        <span>▼</span>
     </div>
-    <div id="chat-messages">
-        <div class="msg bot">Bonjour ! Besoin d'aide pour estimer la puissance de vos appareils ?</div>
+    <div class="chat-body" id="chat-body">
+        <div class="msg bot">Bonjour ! Je suis l'IA Solaris. Je surveille votre configuration en temps réel pour optimiser le dimensionnement. Ajoutez des appareils pour commencer.</div>
     </div>
-    <div id="chat-input-area">
+    <div class="chat-input">
         <input type="text" id="chat-input" placeholder="Posez une question..." onkeypress="handleEnter(event)">
+        <button onclick="sendMessage()" style="border:none; background:var(--primary); color:white; border-radius:50%; width:35px; height:35px; cursor:pointer;"><i class="fas fa-paper-plane"></i></button>
     </div>
 </div>
 
 <script>
-    // --- DONNEES TECHNIQUES ---
-    const PANEL_W = 460; // JA Solar 460W
-    
-    // Lithium Specs
-    const BAT_LITHIUM_KWH = 4.8; // Pylontech US5000
-    const DOD_LITHIUM = 0.8; // 80% utilisable pour autonomie
+    // --- PRIX UNITAIRES (A REMPLIR PAR TOI) ---
+    const PRICES = {
+        panel: 160,          // JA Solar 460W
+        bat_lead: 280,       // Ultracell 150Ah
+        bat_lithium: 1650,   // Pylontech US5000
+        multi_3000: 1100,
+        multi_5000: 1900,
+        multi_8000: 3500,
+        mppt_small: 150,
+        mppt_med: 400,
+        mppt_large: 700,
+        cerbo_kit: 450,      // Cerbo + Touch
+        fixation_base: 200,
+        cables_base: 150
+    };
 
-    // Lead Specs (Ultracell)
-    const BAT_LEAD_V = 12;
-    const BAT_LEAD_AH = 150;
-    const BAT_LEAD_WH = BAT_LEAD_V * BAT_LEAD_AH; // 1800Wh brut par batterie
-    const DOD_LEAD_AUTONOMY = 0.7; // Max 70% décharge totale (autonomie)
-    const DOD_LEAD_DAILY = 0.3;    // Max 30% décharge journalière
+    // Specs Techniques
+    const SPECS = {
+        panel_w: 460,
+        lead_dod_daily: 0.3, // 30% max par jour
+        lead_dod_max: 0.7,   // 70% max total
+        lit_dod: 0.85        // 85% utilisable
+    };
 
-    // Init
-    addPreset(); // Ajoute une ligne par défaut (vide ou preset)
+    // --- LOGIQUE METIER ---
 
-    // --- FONCTIONS ---
+    function calculateKits() {
+        const zone = parseFloat(document.getElementById('zone').value);
+        const autonomy = parseInt(document.getElementById('autonomy').value);
+        const { totalWh, peakW } = getConsumption();
 
-    function updateDisclaimer() {
-        const type = document.getElementById('battery-type').value;
-        const box = document.getElementById('lead-warning');
-        box.style.display = (type === 'lead') ? 'block' : 'none';
-    }
-
-    function addPreset() {
-        const select = document.getElementById('preset-select');
-        const val = select.value;
-        
-        if(val) {
-            const data = JSON.parse(val);
-            createRow(data.name, data.w, data.h);
-            select.value = ""; // Reset select
-        } else {
-            // Si rien sélectionné et appel manuel (ou init), on ajoute ligne vide si demandé explicitement
-            // Ici, addPreset est appelé par le bouton "Ajouter".
-        }
-        updateTotals();
-    }
-
-    function addEmptyRow() {
-        createRow("", "", "");
-    }
-
-    function createRow(name, watts, hours) {
-        const tbody = document.getElementById('appliance-list');
-        const row = document.createElement('tr');
-        row.innerHTML = `
-            <td><input type="text" value="${name}" placeholder="Nom de l'appareil"></td>
-            <td><input type="number" value="${watts}" placeholder="W" class="watts-input" onchange="updateTotals()"></td>
-            <td><input type="number" value="${hours}" placeholder="H" class="hours-input" onchange="updateTotals()"></td>
-            <td><button class="btn-remove" onclick="removeRow(this)">X</button></td>
-        `;
-        tbody.appendChild(row);
-        updateTotals();
-    }
-
-    function removeRow(btn) {
-        btn.closest('tr').remove();
-        updateTotals();
-    }
-
-    function updateTotals() {
-        let totalWh = 0;
-        let peakW = 0;
-        
-        document.querySelectorAll('#appliance-list tr').forEach(row => {
-            const w = parseFloat(row.querySelector('.watts-input').value) || 0;
-            const h = parseFloat(row.querySelector('.hours-input').value) || 0;
-            totalWh += w * h;
-            peakW += w;
-        });
-
-        document.getElementById('total-consumption').innerText = Math.ceil(totalWh);
-        document.getElementById('peak-power').innerText = Math.ceil(peakW);
-        return { totalWh, peakW };
-    }
-
-    function calculateSolarKit() {
-        const { totalWh, peakW } = updateTotals();
-        const zoneFactor = parseFloat(document.getElementById('zone').value);
-        const batteryType = document.getElementById('battery-type').value;
-        const autonomyDays = parseInt(document.getElementById('autonomy').value);
-
-        if (totalWh === 0) {
-            alert("Merci d'ajouter au moins un appareil.");
+        if(totalWh === 0) {
+            aiAlert("Je ne peux pas calculer un kit vide. Ajoutez des appareils !");
             return;
         }
 
-        // 1. CALCUL PANNEAUX
-        // On base la prod sur l'hiver (le pire cas)
-        // Besoin journalier / (HSE Hiver * Coeff Zone * Rendement Système)
-        // HSE Hiver base France = ~2.5 à 3h
-        const hseWinter = 3; 
-        const systemEfficiency = 0.75; // Pertes câbles, onduleur, température
-        const productionMin = hseWinter * zoneFactor * systemEfficiency;
-        
-        const requiredWp = totalWh / productionMin;
-        const panelCount = Math.ceil(requiredWp / PANEL_W);
-        const arrayPower = panelCount * PANEL_W;
+        // 1. Panneaux (Commun aux deux)
+        // Besoin / (HSE Hiver * Zone * 0.75 rendement)
+        const productionFactor = 3.0 * zone * 0.75;
+        const panelsNeeded = Math.ceil(totalWh / productionFactor / SPECS.panel_w);
+        const totalWc = panelsNeeded * SPECS.panel_w;
 
-        // 2. CALCUL BATTERIE
-        let batteryHtml = "";
-        let batIcon = "🔋";
+        // Choix MPPT
+        let mpptPrice = PRICES.mppt_small;
+        let mpptName = "MPPT 150/35";
+        if(totalWc > 1500) { mpptPrice = PRICES.mppt_med; mpptName = "MPPT 250/60"; }
+        if(totalWc > 3000) { mpptPrice = PRICES.mppt_large; mpptName = "MPPT 250/100"; }
 
-        if (batteryType === 'lithium') {
-            // Logique Lithium : Autonomie conditionne le pack
-            const energyNeed = totalWh * autonomyDays;
-            const usefulCapacityPerBat = BAT_LITHIUM_KWH * 1000 * DOD_LITHIUM; // Wh utilisables
-            const nbBat = Math.ceil(energyNeed / usefulCapacityPerBat);
-            
-            const totalCapKwh = (nbBat * BAT_LITHIUM_KWH).toFixed(1);
-            batteryHtml = `<strong>${nbBat}x Pylontech US5000</strong><br>
-                           Capacité totale : ${totalCapKwh} kWh<br>
-                           <small>Basé sur une décharge max de ${(DOD_LITHIUM*100)}%</small>`;
-        
-        } else {
-            // Logique Plomb (Ultracell 150Ah 12V)
-            // Contrainte 1 : Autonomie (Max 70% décharge totale)
-            const capacityForAutonomy = (totalWh * autonomyDays) / DOD_LEAD_AUTONOMY;
-            
-            // Contrainte 2 : Cycle journalier (Max 30% décharge quotidienne)
-            // On dimensionne le parc pour que la consommation d'un jour ne représente que 30% du total
-            const capacityForDaily = totalWh / DOD_LEAD_DAILY;
+        // Choix Onduleur
+        let inverterPrice = PRICES.multi_3000;
+        let inverterName = "MultiPlus-II 3000VA";
+        if(peakW * 1.2 > 2400) { inverterPrice = PRICES.multi_5000; inverterName = "MultiPlus-II 5000VA"; }
+        if(peakW * 1.2 > 4000) { inverterPrice = PRICES.multi_8000; inverterName = "MultiPlus-II 8000VA"; }
 
-            // On prend le plus grand des deux besoins
-            const finalCapacityWh = Math.max(capacityForAutonomy, capacityForDaily);
-            
-            // Nombre de batteries 12V 150Ah
-            let nbBat = Math.ceil(finalCapacityWh / BAT_LEAD_WH);
+        // --- OPTION 1 : PLOMB (ECO) ---
+        // Dimensionnement par contrainte cycle journalier (le plus strict)
+        const leadWhNeeded = Math.max(
+            (totalWh * autonomy) / SPECS.lead_dod_max, // Autonomie
+            totalWh / SPECS.lead_dod_daily             // Cycle de vie
+        );
+        const leadUnitWh = 12 * 150; // 1800Wh
+        let leadQty = Math.ceil(leadWhNeeded / leadUnitWh);
+        // Force multiple de 4 pour 48V
+        if(leadQty < 4) leadQty = 4;
+        else if (leadQty % 4 !== 0) leadQty += (4 - (leadQty % 4));
 
-            // Ajustement pour système 48V (Multiple de 4 obligatoire pour MultiPlus 48V)
-            // Si on a besoin de 5 batteries, on passe à 8 (2 chaînes de 4)
-            const remainder = nbBat % 4;
-            if (remainder !== 0) {
-                nbBat = nbBat + (4 - remainder);
-            }
-            if (nbBat < 4) nbBat = 4; // Minimum 48V
+        const priceLead = (panelsNeeded * PRICES.panel) + (leadQty * PRICES.bat_lead) + inverterPrice + mpptPrice + PRICES.cerbo_kit + PRICES.fixation_base + PRICES.cables_base;
 
-            const totalAh48V = (nbBat / 4) * 150; // Capacité en Ah sous 48V
-            
-            batteryHtml = `<strong>${nbBat}x Ultracell GEL 12V 150Ah</strong><br>
-                           Montage : ${(nbBat/4)} chaîne(s) de 4 en série (48V)<br>
-                           Capacité totale parc : ${totalAh48V}Ah en 48V<br>
-                           <small class="text-warning">Respecte la limite de 30% décharge/jour</small>`;
-        }
-
-        // 3. ONDULEUR & REGULATEUR
-        // Sélection Victron MultiPlus-II
-        const powerMargin = peakW * 1.3; // +30% marge démarrage/sécurité
-        let inverter = "MultiPlus-II 48/3000/35";
-        if (powerMargin > 2400) inverter = "MultiPlus-II 48/5000/70";
-        if (powerMargin > 4000) inverter = "MultiPlus-II 48/8000/110";
-        if (powerMargin > 6500) inverter = "MultiPlus-II 48/10000";
-
-        // Sélection MPPT
-        // Tension Voc string vs Courant charge
-        let mppt = "SmartSolar MPPT 150/35";
-        if (panelCount > 3) mppt = "SmartSolar MPPT 250/60";
-        if (panelCount > 6) mppt = "SmartSolar MPPT 250/85";
-        if (panelCount > 9) mppt = "SmartSolar MPPT 250/100";
-
-        // RENDU HTML
-        const resultDiv = document.getElementById('results-content');
-        resultDiv.innerHTML = `
-            <div class="result-item">
-                <h3>☀️ Champ PV JA Solar</h3>
-                <div class="tech-spec">
-                    Quantité : <strong>${panelCount} panneaux</strong> (460W)<br>
-                    Puissance Crête : ${arrayPower} Wc
-                </div>
-            </div>
-
-            <div class="result-item">
-                <h3>⚡ Parc Batterie</h3>
-                <div class="tech-spec">
-                    ${batteryHtml}
-                </div>
-            </div>
-
-            <div class="result-item">
-                <h3>🔌 Conversion & Gestion</h3>
-                <div class="tech-spec">
-                    Onduleur : <strong>${inverter}</strong><br>
-                    Régulateur : <strong>${mppt}</strong><br>
-                    Système GX : <strong>Cerbo GX + Touch 50</strong>
-                </div>
-            </div>
-            
-            <div style="text-align:center; margin-top:15px;">
-                <button style="background:#27ae60; color:white; border:none; padding:15px; width:100%; border-radius:5px; font-size:1.1rem; cursor:pointer;">
-                    Demander devis pour ce kit
-                </button>
-            </div>
+        // Rendu HTML Plomb
+        document.getElementById('price-lead').innerText = priceLead.toLocaleString() + " €";
+        document.getElementById('details-lead').innerHTML = `
+            <ul>
+                <li><strong>${panelsNeeded}x Panneaux</strong> JA Solar (${totalWc}Wc)</li>
+                <li><strong>${leadQty}x Batteries</strong> Gel 150Ah (Parc ${(leadQty*12*150)/1000} kWh)</li>
+                <li><strong>1x Onduleur</strong> ${inverterName}</li>
+                <li><strong>1x Régulateur</strong> ${mpptName}</li>
+                <li>Supervision Cerbo GX incluse</li>
+            </ul>
         `;
+
+        // --- OPTION 2 : LITHIUM (PREMIUM) ---
+        const litWhNeeded = (totalWh * autonomy) / SPECS.lit_dod;
+        const litUnitWh = 4800; // US5000
+        let litQty = Math.ceil(litWhNeeded / litUnitWh);
+        if(litQty < 1) litQty = 1;
+
+        const priceLit = (panelsNeeded * PRICES.panel) + (litQty * PRICES.bat_lithium) + inverterPrice + mpptPrice + PRICES.cerbo_kit + PRICES.fixation_base + PRICES.cables_base;
+
+        // Rendu HTML Lithium
+        document.getElementById('price-lithium').innerText = priceLit.toLocaleString() + " €";
+        document.getElementById('details-lithium').innerHTML = `
+            <ul>
+                <li><strong>${panelsNeeded}x Panneaux</strong> JA Solar (${totalWc}Wc)</li>
+                <li><strong>${litQty}x Pylontech</strong> US5000 (${(litQty*4.8).toFixed(1)} kWh)</li>
+                <li><strong>1x Onduleur</strong> ${inverterName}</li>
+                <li><strong>1x Régulateur</strong> ${mpptName}</li>
+                <li>Supervision Cerbo GX incluse</li>
+            </ul>
+        `;
+
+        // Afficher la zone
+        document.getElementById('results-area').style.display = 'block';
+        document.getElementById('results-area').scrollIntoView({behavior: 'smooth'});
+
+        // AI Comment
+        aiMessage(`Calcul terminé ! Je vous recommande le <strong>Kit Lithium</strong> sur le long terme (10+ ans). Le kit Plomb est viable si vous respectez strictement les 30% de décharge.`);
     }
 
-    // --- CHATBOT ---
+    function openDetails(type) {
+        alert("Ici, on redirigera vers la page produit du kit " + type + " ou on ajoutera au panier.");
+    }
+
+    // --- GESTION TABLEAU ---
+    function addPreset() {
+        const val = document.getElementById('preset-select').value;
+        if(!val) return;
+        const obj = JSON.parse(val);
+        
+        // AI Analysis immediate
+        if(obj.cat === 'motor') aiMessage(`J'ai détecté un appareil inductif (${obj.name}). Je vais prévoir une marge pour l'onduleur.`);
+        if(obj.cat === 'heating') aiMessage(`Attention, ${obj.name} est très énergivore. Vérifiez bien le temps d'utilisation.`);
+
+        const tbody = document.getElementById('appliance-list');
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td>${obj.name}</td>
+            <td><input type="number" value="${obj.w}" class="p-watt" onchange="updateLiveStats()"></td>
+            <td><input type="number" value="${obj.h}" class="p-hour" onchange="updateLiveStats()"></td>
+            <td><button class="btn-remove" onclick="this.closest('tr').remove(); updateLiveStats()">X</button></td>
+        `;
+        tbody.appendChild(row);
+        updateLiveStats();
+    }
+
+    function getConsumption() {
+        let totalWh = 0;
+        let peakW = 0;
+        document.querySelectorAll('#appliance-list tr').forEach(r => {
+            const w = parseFloat(r.querySelector('.p-watt').value) || 0;
+            const h = parseFloat(r.querySelector('.p-hour').value) || 0;
+            totalWh += w * h;
+            peakW += w;
+        });
+        return { totalWh, peakW };
+    }
+
+    function updateLiveStats() {
+        const { totalWh, peakW } = getConsumption();
+        document.getElementById('total-wh').innerText = Math.round(totalWh);
+        document.getElementById('peak-w').innerText = Math.round(peakW);
+    }
+
+    // --- AI LOGIC (LOCAL) ---
     function toggleChat() {
-        const chat = document.getElementById('chatbot');
-        if (chat.style.height === '40px') chat.style.height = '400px';
-        else chat.style.height = '400px'; // Force open
+        document.getElementById('chatbot').classList.toggle('open');
     }
 
-    function handleEnter(e) {
-        if (e.key === 'Enter') {
-            const input = document.getElementById('chat-input');
-            const val = input.value;
-            if(!val) return;
-            addMsg(val, 'user');
-            input.value = '';
-            setTimeout(()=> botReply(val), 500);
+    function sendMessage() {
+        const input = document.getElementById('chat-input');
+        const txt = input.value;
+        if(!txt) return;
+        
+        // User msg
+        const d = document.createElement('div');
+        d.className = 'msg user'; d.innerText = txt;
+        document.getElementById('chat-body').appendChild(d);
+        input.value = '';
+
+        // Bot thinking
+        setTimeout(() => {
+            let reply = "Je peux vous aider sur le choix entre Plomb et Lithium.";
+            const low = txt.toLowerCase();
+            
+            if(low.includes('différence') || low.includes('comparer')) {
+                reply = "Le Lithium coûte plus cher à l'achat mais dure 6000 cycles (15 ans) contre 600 cycles (4 ans) pour le Plomb si mal utilisé. Le Lithium est le vrai choix économique sur la durée.";
+            } else if(low.includes('pompe') || low.includes('moteur')) {
+                reply = "Pour les pompes, l'onduleur MultiPlus est excellent car il encaisse des pics de puissance 2x supérieurs à sa valeur nominale.";
+            } else if(low.includes('prix') || low.includes('coût')) {
+                reply = "Les prix affichés incluent tout le nécessaire : câbles, fusibles, fixations toiture. C'est du prêt-à-monter.";
+            }
+
+            aiMessage(reply);
+        }, 800);
+    }
+
+    function aiMessage(html) {
+        const c = document.getElementById('chat-body');
+        const d = document.createElement('div');
+        d.className = 'msg bot';
+        d.innerHTML = html;
+        c.appendChild(d);
+        c.scrollTop = c.scrollHeight;
+        
+        // Auto open if closed
+        if(!document.getElementById('chatbot').classList.contains('open')) {
+           // Optional: small notification badge logic here
         }
     }
 
-    function addMsg(text, type) {
-        const div = document.createElement('div');
-        div.className = `msg ${type}`;
-        div.innerText = text;
-        const c = document.getElementById('chat-messages');
-        c.appendChild(div);
-        c.scrollTop = c.scrollHeight;
+    function aiAlert(text) {
+        const c = document.getElementById('chat-body');
+        const d = document.createElement('div');
+        d.className = 'msg system';
+        d.innerHTML = '<i class="fas fa-exclamation-triangle"></i> ' + text;
+        c.appendChild(d);
+        toggleChat(); // Force open
     }
-
-    function botReply(text) {
-        text = text.toLowerCase();
-        let rep = "Je peux vous aider à dimensionner votre kit. Parlez-moi de vos appareils.";
-        
-        if(text.includes('plomb') || text.includes('gel')) rep = "Pour le plomb (Ultracell), nous limitons la décharge journalière à 30% pour garantir une durée de vie de 5 à 7 ans minimum.";
-        if(text.includes('lithium') || text.includes('us5000')) rep = "La Pylontech US5000 accepte des décharges profondes (80-90%). C'est plus cher à l'achat mais bien plus rentable sur 10 ans.";
-        if(text.includes('frigo')) rep = "Un frigo A++ consomme environ 40W en moyenne lissée sur 24h (soit ~1000Wh/jour).";
-        if(text.includes('tv')) rep = "Une TV LED moderne consomme entre 50 et 100W selon la taille.";
-        
-        addMsg(rep, 'bot');
-    }
+    
+    // Init
+    updateLiveStats();
 </script>
 
 </body>
