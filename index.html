@@ -3,429 +3,472 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Configurateur Solaris Store - Comparateur</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <title>Simulateur Solaire - Solaris Store</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+    
     <style>
         :root {
-            --primary: #f39c12; 
-            --secondary: #2c3e50; 
-            --accent: #27ae60;
-            --light: #ecf0f1;
-            --danger: #e74c3c;
-            --text: #34495e;
+            --solaris-orange: #f5a623;
+            --solaris-dark: #333333;
+            --grey-bg: #f7f7f7;
+            --border-color: #e0e0e0;
+            --text-color: #4a4a4a;
         }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f2f5; margin: 0; padding: 0; color: var(--text); }
-        
-        header { background-color: white; padding: 15px 0; box-shadow: 0 2px 10px rgba(0,0,0,0.05); text-align: center; }
-        header h1 { color: var(--secondary); margin: 10px 0 0 0; font-size: 1.8rem; }
-        header p { color: #7f8c8d; margin: 5px 0 0 0; }
 
-        .container { max-width: 1200px; margin: 30px auto; padding: 20px; }
+        body { font-family: 'Open Sans', sans-serif; background-color: var(--grey-bg); margin: 0; color: var(--text-color); }
         
-        /* Layout Grid */
-        .layout-grid { display: grid; grid-template-columns: 1fr; gap: 30px; }
-        
-        /* Section Styles */
-        .section-card { background: white; border-radius: 12px; padding: 30px; box-shadow: 0 5px 15px rgba(0,0,0,0.03); }
-        h2 { color: var(--secondary); border-left: 5px solid var(--primary); padding-left: 15px; margin-top: 0; }
+        /* HEADER STYLE SOLARIS */
+        header { background: white; border-bottom: 3px solid var(--solaris-orange); padding: 15px 0; }
+        .header-content { max-width: 1200px; margin: 0 auto; display: flex; align-items: center; padding: 0 20px; }
+        .logo { font-size: 24px; font-weight: 800; color: var(--solaris-dark); text-transform: uppercase; letter-spacing: 1px; }
+        .logo span { color: var(--solaris-orange); }
 
-        /* Form Styling */
-        .input-group { margin-bottom: 15px; }
-        label { display: block; margin-bottom: 8px; font-weight: 600; color: var(--secondary); }
-        select, input { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 1rem; transition: 0.3s; box-sizing: border-box;}
-        select:focus, input:focus { border-color: var(--primary); outline: none; }
-
-        /* Table */
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th { background: #f8f9fa; text-align: left; padding: 15px; color: var(--secondary); font-weight: 600; }
-        td { padding: 15px; border-bottom: 1px solid #eee; }
-        .btn-remove { background: #ffebee; color: var(--danger); border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; }
-        .btn-remove:hover { background: var(--danger); color: white; }
-
-        /* Action Buttons */
-        .btn-add { background: var(--secondary); color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; }
-        .btn-calc { background: var(--primary); color: white; border: none; padding: 15px 30px; border-radius: 8px; font-size: 1.2rem; font-weight: bold; cursor: pointer; width: 100%; margin-top: 20px; transition: transform 0.2s; }
-        .btn-calc:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(243, 156, 18, 0.4); }
-
-        /* Comparison Results */
-        #results-area { display: none; margin-top: 40px; }
-        .kits-container { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 20px; }
-        @media (max-width: 800px) { .kits-container { grid-template-columns: 1fr; } }
-
-        .kit-card { background: white; border-radius: 12px; overflow: hidden; border: 1px solid #eee; transition: 0.3s; position: relative; display: flex; flex-direction: column; }
-        .kit-card:hover { transform: translateY(-5px); box-shadow: 0 10px 30px rgba(0,0,0,0.1); border-color: var(--primary); }
+        /* CONTAINER */
+        .container { max-width: 1200px; margin: 30px auto; padding: 0 20px; }
         
-        .kit-header { padding: 20px; color: white; text-align: center; }
-        .kit-eco .kit-header { background: linear-gradient(135deg, #95a5a6, #7f8c8d); }
-        .kit-pro .kit-header { background: linear-gradient(135deg, #f39c12, #d35400); }
+        /* STEPS DESIGN */
+        .step-card {
+            background: white;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            padding: 30px;
+            margin-bottom: 25px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.03);
+        }
         
-        .kit-body { padding: 25px; flex-grow: 1; }
-        .kit-price { font-size: 1.8rem; font-weight: bold; color: var(--secondary); text-align: center; margin: 15px 0; }
-        .kit-details ul { padding-left: 20px; color: #555; }
-        .kit-details li { margin-bottom: 8px; }
-        
-        .kit-footer { padding: 20px; text-align: center; background: #f9f9f9; border-top: 1px solid #eee; }
-        .btn-select { width: 100%; padding: 12px; border-radius: 8px; border: none; font-weight: bold; cursor: pointer; font-size: 1rem; }
-        .kit-eco .btn-select { background: #95a5a6; color: white; }
-        .kit-pro .btn-select { background: var(--primary); color: white; }
+        h2 { 
+            font-size: 18px; 
+            text-transform: uppercase; 
+            color: var(--solaris-dark); 
+            border-bottom: 1px solid var(--border-color); 
+            padding-bottom: 15px; 
+            margin-top: 0;
+            display: flex; align-items: center; gap: 10px;
+        }
+        h2 i { color: var(--solaris-orange); }
 
-        /* AI Chatbot Advanced */
-        #chatbot { position: fixed; bottom: 30px; right: 30px; width: 350px; height: 50px; background: white; border-radius: 25px; box-shadow: 0 10px 40px rgba(0,0,0,0.2); transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); overflow: hidden; z-index: 1000; border: 1px solid #eee; display: flex; flex-direction: column; }
-        #chatbot.open { height: 500px; border-radius: 15px; }
-        
-        .chat-header { background: var(--secondary); color: white; padding: 15px 20px; cursor: pointer; display: flex; align-items: center; gap: 10px; font-weight: bold; }
-        .chat-status { width: 10px; height: 10px; background: #2ecc71; border-radius: 50%; display: inline-block; animation: pulse 2s infinite; }
-        
-        .chat-body { flex: 1; padding: 15px; overflow-y: auto; background: #f4f7f6; display: flex; flex-direction: column; gap: 10px; }
-        .chat-input { padding: 15px; background: white; border-top: 1px solid #eee; display: flex; gap: 10px; }
-        .chat-input input { border-radius: 20px; padding: 10px 15px; font-size: 0.9rem; }
-        
-        .msg { padding: 10px 15px; border-radius: 15px; max-width: 85%; font-size: 0.9rem; line-height: 1.4; animation: popIn 0.3s ease; }
-        .msg.bot { background: white; color: #333; border-bottom-left-radius: 2px; border: 1px solid #eee; }
-        .msg.user { background: var(--primary); color: white; align-self: flex-end; border-bottom-right-radius: 2px; }
-        .msg.system { background: #e8f6f3; color: #16a085; font-size: 0.8rem; text-align: center; align-self: center; border: 1px dashed #1abc9c; width: 90%; }
+        /* FORMS */
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        label { display: block; font-weight: 600; font-size: 13px; margin-bottom: 8px; color: #666; }
+        select, input { 
+            width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 3px; 
+            font-family: inherit; font-size: 14px; box-sizing: border-box;
+        }
+        select:focus, input:focus { border-color: var(--solaris-orange); outline: none; }
 
-        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
-        @keyframes popIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        /* TABLE */
+        .appliance-table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 14px; }
+        .appliance-table th { background: #f9f9f9; text-align: left; padding: 10px; border-bottom: 2px solid var(--solaris-orange); }
+        .appliance-table td { padding: 10px; border-bottom: 1px solid #eee; }
+        
+        /* BUTTONS */
+        .btn { 
+            background: var(--solaris-dark); color: white; border: none; padding: 12px 25px; 
+            font-weight: 700; text-transform: uppercase; font-size: 13px; cursor: pointer; border-radius: 2px; transition: 0.3s;
+        }
+        .btn:hover { background: var(--solaris-orange); }
+        .btn-add { background: var(--solaris-orange); padding: 8px 15px; font-size: 12px; }
+        .btn-calc { width: 100%; font-size: 16px; padding: 15px; margin-top: 20px; }
+
+        /* RESULTS AREA */
+        #results-section { display: none; }
+        .kit-comparison { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-top: 30px; }
+        
+        .kit-card { 
+            background: white; border: 1px solid #eee; border-radius: 5px; overflow: hidden; 
+            transition: transform 0.3s; position: relative;
+        }
+        .kit-card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
+        
+        .kit-header { padding: 20px; text-align: center; color: white; }
+        .kit-eco .kit-header { background: #7f8c8d; }
+        .kit-pro .kit-header { background: var(--solaris-orange); }
+        
+        .kit-price { font-size: 28px; font-weight: 800; color: var(--solaris-dark); text-align: center; margin: 20px 0; }
+        .kit-content { padding: 0 20px 20px 20px; font-size: 14px; line-height: 1.6; }
+        .kit-content ul { list-style: none; padding: 0; }
+        .kit-content li { border-bottom: 1px dashed #eee; padding: 8px 0; }
+        .kit-content li i { color: var(--solaris-orange); width: 20px; }
+
+        /* AI CHATBOT MODERN */
+        #ai-widget {
+            position: fixed; bottom: 20px; right: 20px; width: 350px; height: 50px;
+            background: white; border-radius: 8px; box-shadow: 0 5px 25px rgba(0,0,0,0.15);
+            display: flex; flex-direction: column; overflow: hidden; transition: 0.4s; z-index: 999;
+            font-family: 'Open Sans', sans-serif;
+        }
+        #ai-widget.open { height: 500px; }
+        
+        .ai-header {
+            background: var(--solaris-dark); color: white; padding: 15px; cursor: pointer;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .ai-body { flex: 1; padding: 15px; overflow-y: auto; background: #f4f4f4; display: flex; flex-direction: column; gap: 10px; }
+        .ai-input-area { padding: 10px; background: white; border-top: 1px solid #eee; display: flex; gap: 10px; }
+        
+        .msg { padding: 10px; border-radius: 8px; font-size: 13px; max-width: 85%; }
+        .msg.bot { background: white; border: 1px solid #ddd; align-self: flex-start; }
+        .msg.user { background: var(--solaris-orange); color: white; align-self: flex-end; }
+        
+        /* API KEY SETTINGS */
+        #api-key-modal { display:none; position:absolute; top:50px; left:0; right:0; background:rgba(0,0,0,0.9); padding:20px; color:white; z-index:1000; text-align:center; }
+
     </style>
 </head>
 <body>
 
 <header>
-    <h1><i class="fas fa-solar-panel" style="color:var(--primary);"></i> Solaris Store</h1>
-    <p>Configurateur Site Isolé & Hybride</p>
+    <div class="header-content">
+        <div class="logo">SOLARIS<span>STORE</span></div>
+        <div style="margin-left: auto; font-size: 14px; font-weight: 600;">
+            <i class="fas fa-phone-alt" style="color:var(--solaris-orange)"></i> 04 74 -- -- --
+        </div>
+    </div>
 </header>
 
 <div class="container">
     
-    <div class="section-card">
-        <h2><i class="fas fa-map-marker-alt"></i> 1. Localisation</h2>
-        <div class="input-group">
-            <label>Sélectionnez votre zone :</label>
-            <select id="zone">
-                <option value="0.85">Nord / Belgique (Faible)</option>
-                <option value="1.0" selected>Centre / Ouest (Moyen)</option>
-                <option value="1.3">Sud de la France (Fort)</option>
-                <option value="1.5">Afrique / DOM-TOM (Très fort)</option>
-            </select>
-        </div>
-        <div class="input-group">
-            <label>Autonomie souhaitée :</label>
-            <select id="autonomy">
-                <option value="1">1 jour (Usage Weekend)</option>
-                <option value="2" selected>2 jours (Standard Habitat)</option>
-                <option value="3">3 jours (Sécurité Maximale)</option>
-            </select>
+    <div class="step-card">
+        <h2><i class="fas fa-map-marker-alt"></i> 1. Localisation du site</h2>
+        <div class="form-grid">
+            <div>
+                <label>Zone d'ensoleillement</label>
+                <select id="zone">
+                    <option value="0.85">Zone 1 : Nord / Nord-Est (Faible)</option>
+                    <option value="1.0" selected>Zone 2 : Centre / Ouest (Moyen)</option>
+                    <option value="1.2">Zone 3 : Sud-Ouest / Rhône (Bon)</option>
+                    <option value="1.3">Zone 4 : Sud-Est / Corse (Excellent)</option>
+                    <option value="1.5">Zone 5 : Afrique / DOM-TOM</option>
+                </select>
+            </div>
+            <div>
+                <label>Utilisation</label>
+                <select id="period">
+                    <option value="1">Annuelle (Habitation principale)</option>
+                    <option value="1.2">Estivale (Avril - Octobre)</option>
+                </select>
+            </div>
         </div>
     </div>
 
-    <div class="section-card" style="margin-top: 20px;">
-        <h2><i class="fas fa-plug"></i> 2. Vos Appareils</h2>
+    <div class="step-card">
+        <h2><i class="fas fa-plug"></i> 2. Vos besoins électriques</h2>
         
-        <div style="background: #fdf2e9; padding: 15px; border-radius: 8px; border-left: 4px solid var(--primary); margin-bottom: 20px;">
-            <i class="fas fa-info-circle"></i> <strong>Astuce :</strong> Ajoutez vos appareils un par un. L'assistant IA analyse votre liste en temps réel.
+        <div style="background: #fff8e1; padding: 10px; border-left: 3px solid var(--solaris-orange); margin-bottom: 15px; font-size: 13px;">
+            Ajoutez vos appareils ci-dessous. L'assistant IA vérifie la cohérence en temps réel.
         </div>
 
-        <div style="display: flex; gap: 10px; margin-bottom: 15px;">
-            <select id="preset-select">
-                <option value="">-- Appareils Rapides --</option>
-                <option value='{"name":"Frigo A++", "w":40, "h":24, "cat":"motor"}'>Réfrigérateur (24h)</option>
-                <option value='{"name":"Éclairage LED", "w":50, "h":5, "cat":"resistive"}'>Lumières (5h)</option>
-                <option value='{"name":"TV LED", "w":80, "h":4, "cat":"electronic"}'>Télévision (4h)</option>
-                <option value='{"name":"Pompe à eau", "w":1000, "h":0.5, "cat":"motor"}'>Pompe à eau (30 min)</option>
-                <option value='{"name":"Machine Café", "w":1400, "h":0.1, "cat":"heating"}'>Cafetière (Express)</option>
-                <option value='{"name":"Lave Linge", "w":2000, "h":0.5, "cat":"motor"}'>Lave-linge (Cycle Eco)</option>
-                <option value='{"name":"Ordinateur", "w":60, "h":6, "cat":"electronic"}'>PC Portable (6h)</option>
+        <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+            <select id="quick-add">
+                <option value="">-- Ajout Rapide --</option>
+                <option value='{"n":"Réfrigérateur A++", "w":60, "h":24}'>Frigo A++ (24h)</option>
+                <option value='{"n":"Éclairage LED", "w":40, "h":4}'>Éclairage (4h)</option>
+                <option value='{"n":"TV LED", "w":100, "h":3}'>Télévision (3h)</option>
+                <option value='{"n":"Chargeurs USB", "w":15, "h":3}'>Chargeurs Tél (3h)</option>
+                <option value='{"n":"Pompe Surpresseur", "w":800, "h":0.3}'>Pompe Eau (20min)</option>
+                <option value='{"n":"PC Portable", "w":60, "h":5}'>PC Portable (5h)</option>
             </select>
-            <button onclick="addPreset()" class="btn-add">Ajouter</button>
+            <button class="btn btn-add" onclick="addPreset()">OK</button>
         </div>
 
-        <table id="appliance-table">
+        <table class="appliance-table">
             <thead>
                 <tr>
                     <th>Appareil</th>
-                    <th width="120">Puissance (W)</th>
-                    <th width="120">Heures/jour</th>
+                    <th width="100">Puissance (W)</th>
+                    <th width="100">Heures/jour</th>
                     <th width="50"></th>
                 </tr>
             </thead>
-            <tbody id="appliance-list"></tbody>
+            <tbody id="list"></tbody>
         </table>
-
-        <div style="text-align: right; margin-top: 15px; font-size: 1.1rem;">
-            Total: <strong><span id="total-wh">0</span> Wh/jour</strong> | Crête: <strong><span id="peak-w">0</span> W</strong>
+        
+        <div style="text-align: right; margin-top: 15px; font-weight: bold;">
+            Conso Journalière : <span id="total-wh" style="color:var(--solaris-orange)">0</span> Wh/j
         </div>
 
-        <button onclick="calculateKits()" class="btn-calc">COMPARER LES KITS SOLAIRES</button>
+        <div style="margin-top: 20px;">
+            <label>Autonomie souhaitée (Jours sans soleil)</label>
+            <select id="autonomy">
+                <option value="2">2 Jours (Standard)</option>
+                <option value="3">3 Jours (Sécurité)</option>
+                <option value="4">4 Jours (Zone montagne/Nord)</option>
+            </select>
+        </div>
+
+        <button class="btn btn-calc" onclick="calculate()">CALCULER MON KIT</button>
     </div>
 
-    <div id="results-area">
-        <h2 style="text-align: center; border: none;">💡 Nos Recommandations</h2>
+    <div id="results-section">
+        <h2 style="text-align: center; border:none; font-size: 24px;">Nos Solutions Kit Tout-en-un</h2>
+        <p style="text-align: center; color: #666;">Ces kits incluent : Panneaux, Batteries, Onduleur, Câbles (10m), Protections DC/AC et Fixations toiture.</p>
         
-        <div class="kits-container">
-            
+        <div class="kit-comparison">
             <div class="kit-card kit-eco">
                 <div class="kit-header">
-                    <h3>OPTION BUDGET</h3>
-                    <span>Technologie Plomb Gel</span>
+                    <h3>KIT ECO (GEL)</h3>
+                    <small>Usage occasionnel / Budget</small>
                 </div>
-                <div class="kit-body">
-                    <p>Idéal pour résidence secondaire ou budget maîtrisé.</p>
-                    <div class="kit-price" id="price-lead">-- €</div>
-                    <div class="kit-details" id="details-lead"></div>
-                </div>
-                <div class="kit-footer">
-                    <button class="btn-select" onclick="openDetails('lead')">Voir ce kit</button>
+                <div class="kit-price" id="price-lead">-- €</div>
+                <div class="kit-content" id="details-lead"></div>
+                <div style="padding: 20px;">
+                    <button class="btn" style="width:100%; background: #7f8c8d;">Voir le détail</button>
                 </div>
             </div>
 
             <div class="kit-card kit-pro">
-                <div style="position: absolute; top: 15px; right: -30px; background: #c0392b; color: white; padding: 5px 40px; transform: rotate(45deg); font-weight: bold; font-size: 0.8rem;">BEST SELLER</div>
                 <div class="kit-header">
-                    <h3>OPTION PERFORMANCE</h3>
-                    <span>Technologie Lithium LiFePO4</span>
+                    <h3>KIT PREMIUM (LITHIUM)</h3>
+                    <small>Usage intensif / Longue durée</small>
                 </div>
-                <div class="kit-body">
-                    <p>Durée de vie x5, charge rapide, extension facile.</p>
-                    <div class="kit-price" id="price-lithium">-- €</div>
-                    <div class="kit-details" id="details-lithium"></div>
-                </div>
-                <div class="kit-footer">
-                    <button class="btn-select" onclick="openDetails('lithium')">Voir ce kit</button>
+                <div class="kit-price" id="price-lit">-- €</div>
+                <div class="kit-content" id="details-lit"></div>
+                <div style="padding: 20px;">
+                    <button class="btn" style="width:100%;">Voir le détail</button>
                 </div>
             </div>
-
         </div>
     </div>
 
 </div>
 
-<div id="chatbot" class="closed">
-    <div class="chat-header" onclick="toggleChat()">
-        <span class="chat-status"></span>
-        <span>Assistant Solaris IA</span>
+<div id="ai-widget">
+    <div class="ai-header" onclick="toggleChat()">
+        <span><i class="fas fa-robot"></i> Expert Solaire IA</span>
+        <div>
+            <i class="fas fa-cog" onclick="event.stopPropagation(); toggleKeyModal()" title="Réglages API"></i>
+            <i class="fas fa-chevron-up"></i>
+        </div>
     </div>
-    <div class="chat-body" id="chat-body">
-        <div class="msg bot">Bonjour ! Je suis l'IA Solaris. Je surveille votre configuration en temps réel pour optimiser le dimensionnement. Ajoutez des appareils pour commencer.</div>
+    
+    <div id="api-key-modal">
+        <p style="font-size:12px;">Pour activer l'IA "Intelligente", entrez votre clé OpenAI (sk-...).<br>Sinon, l'assistant utilisera des réponses basiques.</p>
+        <input type="password" id="openai-key" placeholder="sk-..." style="margin-bottom:10px;">
+        <button class="btn btn-add" onclick="saveKey()">Enregistrer</button>
     </div>
-    <div class="chat-input">
-        <input type="text" id="chat-input" placeholder="Posez une question..." onkeypress="handleEnter(event)">
-        <button onclick="sendMessage()" style="border:none; background:var(--primary); color:white; border-radius:50%; width:35px; height:35px; cursor:pointer;"><i class="fas fa-paper-plane"></i></button>
+
+    <div class="ai-body" id="chat-box">
+        <div class="msg bot">Bonjour ! Je suis l'assistant technique Solaris. Posez-moi n'importe quelle question sur le photovoltaïque, le câblage ou votre dimensionnement.</div>
+    </div>
+    <div class="ai-input-area">
+        <input type="text" id="user-input" placeholder="Posez votre question..." onkeypress="handleEnter(event)">
+        <button class="btn btn-add" onclick="sendMessage()"><i class="fas fa-paper-plane"></i></button>
     </div>
 </div>
 
 <script>
-    // --- PRIX UNITAIRES (A REMPLIR PAR TOI) ---
-    const PRICES = {
-        panel: 160,          // JA Solar 460W
-        bat_lead: 280,       // Ultracell 150Ah
-        bat_lithium: 1650,   // Pylontech US5000
-        multi_3000: 1100,
-        multi_5000: 1900,
-        multi_8000: 3500,
-        mppt_small: 150,
-        mppt_med: 400,
-        mppt_large: 700,
-        cerbo_kit: 450,      // Cerbo + Touch
-        fixation_base: 200,
-        cables_base: 150
+    // --- CONFIGURATION PRIX & TECHNIQUE ---
+    const PRICING = {
+        panel: 155,       // JA Solar 460W
+        bat_lead: 260,    // Ultracell 150Ah
+        bat_lit: 1690,    // Pylontech US5000
+        multi_3k: 1150,
+        multi_5k: 1950,
+        mppt_s: 140,
+        mppt_m: 380,
+        mppt_l: 650,
+        gx: 320,
+        cables_base: 250, // Forfait câblage de base
+        fixation_per_panel: 60
     };
 
-    // Specs Techniques
-    const SPECS = {
-        panel_w: 460,
-        lead_dod_daily: 0.3, // 30% max par jour
-        lead_dod_max: 0.7,   // 70% max total
-        lit_dod: 0.85        // 85% utilisable
-    };
+    let apiKey = localStorage.getItem('openai_key') || "";
 
-    // --- LOGIQUE METIER ---
+    // --- LOGIQUE CALCUL ---
+    function addPreset() {
+        const val = document.getElementById('quick-add').value;
+        if(!val) return;
+        const obj = JSON.parse(val);
+        addRow(obj.n, obj.w, obj.h);
+    }
 
-    function calculateKits() {
+    function addRow(name, w, h) {
+        const tbody = document.getElementById('list');
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td><input type="text" value="${name}"></td>
+            <td><input type="number" value="${w}" class="w-in" onchange="calcTotal()"></td>
+            <td><input type="number" value="${h}" class="h-in" onchange="calcTotal()"></td>
+            <td><i class="fas fa-trash" style="color:#e74c3c; cursor:pointer;" onclick="this.closest('tr').remove(); calcTotal()"></i></td>
+        `;
+        tbody.appendChild(tr);
+        calcTotal();
+    }
+
+    function calcTotal() {
+        let sum = 0;
+        document.querySelectorAll('#list tr').forEach(row => {
+            const w = parseFloat(row.querySelector('.w-in').value) || 0;
+            const h = parseFloat(row.querySelector('.h-in').value) || 0;
+            sum += w * h;
+        });
+        document.getElementById('total-wh').innerText = Math.round(sum);
+        return sum;
+    }
+
+    function calculate() {
+        const totalWh = calcTotal();
         const zone = parseFloat(document.getElementById('zone').value);
         const autonomy = parseInt(document.getElementById('autonomy').value);
-        const { totalWh, peakW } = getConsumption();
 
-        if(totalWh === 0) {
-            aiAlert("Je ne peux pas calculer un kit vide. Ajoutez des appareils !");
+        if(totalWh === 0) { alert("Veuillez ajouter des appareils."); return; }
+
+        // 1. Panneaux
+        // Prod hivernale minable = 3h * zone * 0.75 rendement
+        const prodFactor = 3 * zone * 0.75;
+        const panelCount = Math.ceil(totalWh / prodFactor / 460);
+        const powerWc = panelCount * 460;
+
+        // Choix MPPT & Onduleur
+        let mpptName = "SmartSolar 150/35", mpptPrice = PRICING.mppt_s;
+        if(powerWc > 1800) { mpptName = "SmartSolar 250/60"; mpptPrice = PRICING.mppt_m; }
+        if(powerWc > 3500) { mpptName = "SmartSolar 250/100"; mpptPrice = PRICING.mppt_l; }
+
+        let invName = "MultiPlus-II 3000VA", invPrice = PRICING.multi_3k;
+        // Estimation puissance crête (somme des watts)
+        let peakW = 0;
+        document.querySelectorAll('.w-in').forEach(i => peakW += parseFloat(i.value)||0);
+        if(peakW > 2400) { invName = "MultiPlus-II 5000VA"; invPrice = PRICING.multi_5k; }
+
+        // 2. Batteries
+        // PLOMB (Max 30% décharge jour)
+        const leadWh = Math.max((totalWh * autonomy)/0.7, totalWh/0.3);
+        let leadQty = Math.ceil(leadWh / (12*150));
+        if(leadQty % 4 !== 0) leadQty += (4 - (leadQty % 4)); // Multiple de 4
+        if(leadQty < 4) leadQty = 4;
+
+        // LITHIUM (Max 90% décharge)
+        const litWh = (totalWh * autonomy) / 0.9;
+        let litQty = Math.ceil(litWh / 4800);
+        if(litQty < 1) litQty = 1;
+
+        // PRIX TOTAL
+        const cableFix = PRICING.cables_base + (panelCount * PRICING.fixation_per_panel);
+        
+        const costLead = (panelCount*PRICING.panel) + (leadQty*PRICING.bat_lead) + invPrice + mpptPrice + PRICING.gx + cableFix;
+        const costLit = (panelCount*PRICING.panel) + (litQty*PRICING.bat_lit) + invPrice + mpptPrice + PRICING.gx + cableFix;
+
+        // AFFICHAGE
+        document.getElementById('price-lead').innerText = costLead.toLocaleString() + " €";
+        document.getElementById('details-lead').innerHTML = `
+            <ul>
+                <li><i class="fas fa-solar-panel"></i> <strong>${panelCount}x</strong> Panneaux JA Solar 460W (${powerWc}Wc)</li>
+                <li><i class="fas fa-battery-full"></i> <strong>${leadQty}x</strong> Batteries Gel 150Ah (Parc ${(leadQty*12*150)/1000}kWh)</li>
+                <li><i class="fas fa-bolt"></i> Onduleur ${invName}</li>
+                <li><i class="fas fa-microchip"></i> Régulateur ${mpptName} + Cerbo GX</li>
+                <li><i class="fas fa-tools"></i> Kit Câbles 25mm² + Coffrets AC/DC + Fixations</li>
+            </ul>
+        `;
+
+        document.getElementById('price-lit').innerText = costLit.toLocaleString() + " €";
+        document.getElementById('details-lit').innerHTML = `
+            <ul>
+                <li><i class="fas fa-solar-panel"></i> <strong>${panelCount}x</strong> Panneaux JA Solar 460W (${powerWc}Wc)</li>
+                <li><i class="fas fa-battery-full"></i> <strong>${litQty}x</strong> Pylontech US5000 (${(litQty*4.8).toFixed(1)}kWh)</li>
+                <li><i class="fas fa-bolt"></i> Onduleur ${invName}</li>
+                <li><i class="fas fa-microchip"></i> Régulateur ${mpptName} + Cerbo GX</li>
+                <li><i class="fas fa-tools"></i> Kit Câbles 25mm² + Coffrets AC/DC + Fixations</li>
+            </ul>
+        `;
+
+        document.getElementById('results-section').style.display = 'block';
+        document.getElementById('results-section').scrollIntoView({behavior:'smooth'});
+    }
+
+    // --- INTELLIGENCE ARTIFICIELLE (OPENAI) ---
+    
+    function toggleChat() {
+        document.getElementById('ai-widget').classList.toggle('open');
+    }
+
+    function toggleKeyModal() {
+        const m = document.getElementById('api-key-modal');
+        m.style.display = m.style.display === 'block' ? 'none' : 'block';
+    }
+
+    function saveKey() {
+        const k = document.getElementById('openai-key').value;
+        if(k.startsWith('sk-')) {
+            apiKey = k;
+            localStorage.setItem('openai_key', k);
+            alert("Clé enregistrée ! L'IA est maintenant active.");
+            toggleKeyModal();
+        } else {
+            alert("Clé invalide. Elle doit commencer par 'sk-'");
+        }
+    }
+
+    function handleEnter(e) {
+        if(e.key === 'Enter') sendMessage();
+    }
+
+    async function sendMessage() {
+        const input = document.getElementById('user-input');
+        const text = input.value;
+        if(!text) return;
+
+        // Afficher message user
+        const box = document.getElementById('chat-box');
+        box.innerHTML += `<div class="msg user">${text}</div>`;
+        input.value = "";
+        box.scrollTop = box.scrollHeight;
+
+        // Préparer le "Loading"
+        const loadingDiv = document.createElement('div');
+        loadingDiv.className = 'msg bot';
+        loadingDiv.innerText = '...';
+        box.appendChild(loadingDiv);
+
+        if(!apiKey) {
+            loadingDiv.innerText = "⚠️ Clé API manquante. Cliquez sur l'engrenage pour configurer OpenAI. (Mode réponse par défaut activé)";
+            setTimeout(() => {
+                loadingDiv.innerText = getFallbackResponse(text);
+            }, 1000);
             return;
         }
 
-        // 1. Panneaux (Commun aux deux)
-        // Besoin / (HSE Hiver * Zone * 0.75 rendement)
-        const productionFactor = 3.0 * zone * 0.75;
-        const panelsNeeded = Math.ceil(totalWh / productionFactor / SPECS.panel_w);
-        const totalWc = panelsNeeded * SPECS.panel_w;
+        // Appel API OpenAI
+        try {
+            const context = `Tu es l'assistant expert de Solaris Store. Tu es courtois, pro et technique. 
+            Le client dimensionne un kit solaire.
+            Détails techniques : Panneaux JA Solar 460W, Batteries Pylontech US5000 ou Ultracell Gel. Onduleurs Victron MultiPlus.
+            Réponds de façon concise (max 3 phrases). Si la question est hors-sujet solaire, dis poliment que tu ne gères que le solaire.`;
 
-        // Choix MPPT
-        let mpptPrice = PRICES.mppt_small;
-        let mpptName = "MPPT 150/35";
-        if(totalWc > 1500) { mpptPrice = PRICES.mppt_med; mpptName = "MPPT 250/60"; }
-        if(totalWc > 3000) { mpptPrice = PRICES.mppt_large; mpptName = "MPPT 250/100"; }
+            const response = await fetch('https://api.openai.com/v1/chat/completions', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${apiKey}`
+                },
+                body: JSON.stringify({
+                    model: "gpt-3.5-turbo",
+                    messages: [
+                        {role: "system", content: context},
+                        {role: "user", content: text}
+                    ]
+                })
+            });
 
-        // Choix Onduleur
-        let inverterPrice = PRICES.multi_3000;
-        let inverterName = "MultiPlus-II 3000VA";
-        if(peakW * 1.2 > 2400) { inverterPrice = PRICES.multi_5000; inverterName = "MultiPlus-II 5000VA"; }
-        if(peakW * 1.2 > 4000) { inverterPrice = PRICES.multi_8000; inverterName = "MultiPlus-II 8000VA"; }
-
-        // --- OPTION 1 : PLOMB (ECO) ---
-        // Dimensionnement par contrainte cycle journalier (le plus strict)
-        const leadWhNeeded = Math.max(
-            (totalWh * autonomy) / SPECS.lead_dod_max, // Autonomie
-            totalWh / SPECS.lead_dod_daily             // Cycle de vie
-        );
-        const leadUnitWh = 12 * 150; // 1800Wh
-        let leadQty = Math.ceil(leadWhNeeded / leadUnitWh);
-        // Force multiple de 4 pour 48V
-        if(leadQty < 4) leadQty = 4;
-        else if (leadQty % 4 !== 0) leadQty += (4 - (leadQty % 4));
-
-        const priceLead = (panelsNeeded * PRICES.panel) + (leadQty * PRICES.bat_lead) + inverterPrice + mpptPrice + PRICES.cerbo_kit + PRICES.fixation_base + PRICES.cables_base;
-
-        // Rendu HTML Plomb
-        document.getElementById('price-lead').innerText = priceLead.toLocaleString() + " €";
-        document.getElementById('details-lead').innerHTML = `
-            <ul>
-                <li><strong>${panelsNeeded}x Panneaux</strong> JA Solar (${totalWc}Wc)</li>
-                <li><strong>${leadQty}x Batteries</strong> Gel 150Ah (Parc ${(leadQty*12*150)/1000} kWh)</li>
-                <li><strong>1x Onduleur</strong> ${inverterName}</li>
-                <li><strong>1x Régulateur</strong> ${mpptName}</li>
-                <li>Supervision Cerbo GX incluse</li>
-            </ul>
-        `;
-
-        // --- OPTION 2 : LITHIUM (PREMIUM) ---
-        const litWhNeeded = (totalWh * autonomy) / SPECS.lit_dod;
-        const litUnitWh = 4800; // US5000
-        let litQty = Math.ceil(litWhNeeded / litUnitWh);
-        if(litQty < 1) litQty = 1;
-
-        const priceLit = (panelsNeeded * PRICES.panel) + (litQty * PRICES.bat_lithium) + inverterPrice + mpptPrice + PRICES.cerbo_kit + PRICES.fixation_base + PRICES.cables_base;
-
-        // Rendu HTML Lithium
-        document.getElementById('price-lithium').innerText = priceLit.toLocaleString() + " €";
-        document.getElementById('details-lithium').innerHTML = `
-            <ul>
-                <li><strong>${panelsNeeded}x Panneaux</strong> JA Solar (${totalWc}Wc)</li>
-                <li><strong>${litQty}x Pylontech</strong> US5000 (${(litQty*4.8).toFixed(1)} kWh)</li>
-                <li><strong>1x Onduleur</strong> ${inverterName}</li>
-                <li><strong>1x Régulateur</strong> ${mpptName}</li>
-                <li>Supervision Cerbo GX incluse</li>
-            </ul>
-        `;
-
-        // Afficher la zone
-        document.getElementById('results-area').style.display = 'block';
-        document.getElementById('results-area').scrollIntoView({behavior: 'smooth'});
-
-        // AI Comment
-        aiMessage(`Calcul terminé ! Je vous recommande le <strong>Kit Lithium</strong> sur le long terme (10+ ans). Le kit Plomb est viable si vous respectez strictement les 30% de décharge.`);
-    }
-
-    function openDetails(type) {
-        alert("Ici, on redirigera vers la page produit du kit " + type + " ou on ajoutera au panier.");
-    }
-
-    // --- GESTION TABLEAU ---
-    function addPreset() {
-        const val = document.getElementById('preset-select').value;
-        if(!val) return;
-        const obj = JSON.parse(val);
-        
-        // AI Analysis immediate
-        if(obj.cat === 'motor') aiMessage(`J'ai détecté un appareil inductif (${obj.name}). Je vais prévoir une marge pour l'onduleur.`);
-        if(obj.cat === 'heating') aiMessage(`Attention, ${obj.name} est très énergivore. Vérifiez bien le temps d'utilisation.`);
-
-        const tbody = document.getElementById('appliance-list');
-        const row = document.createElement('tr');
-        row.innerHTML = `
-            <td>${obj.name}</td>
-            <td><input type="number" value="${obj.w}" class="p-watt" onchange="updateLiveStats()"></td>
-            <td><input type="number" value="${obj.h}" class="p-hour" onchange="updateLiveStats()"></td>
-            <td><button class="btn-remove" onclick="this.closest('tr').remove(); updateLiveStats()">X</button></td>
-        `;
-        tbody.appendChild(row);
-        updateLiveStats();
-    }
-
-    function getConsumption() {
-        let totalWh = 0;
-        let peakW = 0;
-        document.querySelectorAll('#appliance-list tr').forEach(r => {
-            const w = parseFloat(r.querySelector('.p-watt').value) || 0;
-            const h = parseFloat(r.querySelector('.p-hour').value) || 0;
-            totalWh += w * h;
-            peakW += w;
-        });
-        return { totalWh, peakW };
-    }
-
-    function updateLiveStats() {
-        const { totalWh, peakW } = getConsumption();
-        document.getElementById('total-wh').innerText = Math.round(totalWh);
-        document.getElementById('peak-w').innerText = Math.round(peakW);
-    }
-
-    // --- AI LOGIC (LOCAL) ---
-    function toggleChat() {
-        document.getElementById('chatbot').classList.toggle('open');
-    }
-
-    function sendMessage() {
-        const input = document.getElementById('chat-input');
-        const txt = input.value;
-        if(!txt) return;
-        
-        // User msg
-        const d = document.createElement('div');
-        d.className = 'msg user'; d.innerText = txt;
-        document.getElementById('chat-body').appendChild(d);
-        input.value = '';
-
-        // Bot thinking
-        setTimeout(() => {
-            let reply = "Je peux vous aider sur le choix entre Plomb et Lithium.";
-            const low = txt.toLowerCase();
+            const data = await response.json();
+            if(data.error) throw new Error(data.error.message);
             
-            if(low.includes('différence') || low.includes('comparer')) {
-                reply = "Le Lithium coûte plus cher à l'achat mais dure 6000 cycles (15 ans) contre 600 cycles (4 ans) pour le Plomb si mal utilisé. Le Lithium est le vrai choix économique sur la durée.";
-            } else if(low.includes('pompe') || low.includes('moteur')) {
-                reply = "Pour les pompes, l'onduleur MultiPlus est excellent car il encaisse des pics de puissance 2x supérieurs à sa valeur nominale.";
-            } else if(low.includes('prix') || low.includes('coût')) {
-                reply = "Les prix affichés incluent tout le nécessaire : câbles, fusibles, fixations toiture. C'est du prêt-à-monter.";
-            }
+            loadingDiv.innerText = data.choices[0].message.content;
 
-            aiMessage(reply);
-        }, 800);
-    }
-
-    function aiMessage(html) {
-        const c = document.getElementById('chat-body');
-        const d = document.createElement('div');
-        d.className = 'msg bot';
-        d.innerHTML = html;
-        c.appendChild(d);
-        c.scrollTop = c.scrollHeight;
-        
-        // Auto open if closed
-        if(!document.getElementById('chatbot').classList.contains('open')) {
-           // Optional: small notification badge logic here
+        } catch (err) {
+            loadingDiv.innerText = "Erreur IA : " + err.message;
         }
+        
+        box.scrollTop = box.scrollHeight;
     }
 
-    function aiAlert(text) {
-        const c = document.getElementById('chat-body');
-        const d = document.createElement('div');
-        d.className = 'msg system';
-        d.innerHTML = '<i class="fas fa-exclamation-triangle"></i> ' + text;
-        c.appendChild(d);
-        toggleChat(); // Force open
+    function getFallbackResponse(text) {
+        text = text.toLowerCase();
+        if(text.includes('prix')) return "Les prix affichés incluent tout le kit complet (câbles, fixations, protections).";
+        if(text.includes('batterie')) return "Nous proposons le Lithium (Pylontech) pour la longévité ou le Plomb (Ultracell) pour le budget.";
+        return "Pour une réponse personnalisée précise, veuillez configurer votre clé API dans les réglages.";
     }
-    
-    // Init
-    updateLiveStats();
+
 </script>
-
 </body>
 </html>
